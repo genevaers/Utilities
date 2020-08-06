@@ -1,0 +1,67 @@
+*
+* (c) Copyright IBM Corporation 2013, 2016.  
+*     Copyright Contributors to the GenevaERS Project.
+* SPDX-License-Identifier: Apache-2.0
+*
+****************************************************************************
+*                                                                           
+*   Licensed under the Apache License, Version 2.0 (the "License");         
+*   you may not use this file except in compliance with the License.        
+*   You may obtain a copy of the License at                                 
+*                                                                           
+*     http://www.apache.org/licenses/LICENSE-2.0                            
+*                                                                           
+*   Unless required by applicable law or agreed to in writing, software     
+*   distributed under the License is distributed on an "AS IS" BASIS,       
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and     
+*   limitations under the License.                                          
+****************************************************************************
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        E X E C   P A R A M E T E R   A R E A   D E F I N I T I O N  *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+EXECDATA DSECT                 PARAMETER AREA  DEFINITION
+*
+EXECVERS DS    FL04            LOGIC     TABLE VERSION NO
+EXECMSDN DS    CL03            Multsdn
+         ds    cl01
+         ORG   EXECMSDN
+EXECNRD  DS    CL02            NUMBER OF READ  BUFFERS
+EXECNWRT DS    CL02            NUMBER OF WRITE BUFFERS
+EXECSNGL DS    CL01            FIRST/SINGLE    THREAD  MODE
+EXECTRAC DS    CL01            TRACE  ON/OFF   SWITCH
+EXECSNAP DS    CL01            "SNAP" ON/OFF   SWITCH (LTBL + CODE)
+EXECVSIZ DS    CL06            VDP      TABLE  SIZE   (* 1024)
+EXECDISK DS    CL04            NO. OF   DISK   THREADS
+EXECTAPE DS    CL04            NO. OF   TAPE   THREADS
+EXECRLIM DS    CL13            EVENT  FILE READ LIMIT
+EXECDUMY DS    CL01            "DUMMY"  EXTRACT FILES NOT IN JCL
+EXECSPLN DS    CL08            DB2 PLAN  NAME OVERRIDE - SQL  ("MRSQ")
+EXECVPLN DS    CL08            DB2 PLAN  NAME OVERRIDE - VSAM ("MRDV")
+EXECZIIP DS    CL01            ZIIP REQUESTED (Y)
+EXEC_SRBLIMIT ds cl4           maximum number of active srbs.
+execovfl_on ds cl1             psw overflow mask on
+execpagf    ds cl1             Page fixing is allowed/disallowed Y/N
+*
+exec_bdate  ds cl8             BATCH_DATE set as system date
+exec_rdate  ds cl8             RUN_DATE now here from GVBMR91
+exec_fdate  ds cl8             FISCAL_DATE now here from GVBMR91
+*
+EXECTPLN DS    CL08            DB2 PLAN  NAME OVERRIDE - VSAM ("MRCT")
+*
+EXECmsgab   ds cl5             Abend message num (moved from PARMTBL)
+EXECltab    ds cl8             Abend Logic Table row no (from PARMTBL)
+*
+EXEC_db2_df ds  cl03           DB2 VSAM - return dates in this format
+*                               Default is ISO format ccyy-mm-dd
+*                               'DB2'=Get format from DB2
+*                               Other values 'ISO', 'USA', 'EUR', 'JIS'
+*
+exec_optpo  ds  c               Optimize_packed_output Y or N
+exec_uabend ds  c              User abend (or return code) Y/N
+EXECDLEN EQU   *-EXECDATA      PARAMETER DATA  LENGTH
+*

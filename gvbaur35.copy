@@ -1,0 +1,108 @@
+*
+* (c) Copyright IBM Corporation 2005.
+*     Copyright Contributors to the GenevaERS Project.
+* SPDX-License-Identifier: Apache-2.0
+*
+****************************************************************************
+*                                                                           
+*   Licensed under the Apache License, Version 2.0 (the "License");         
+*   you may not use this file except in compliance with the License.        
+*   You may obtain a copy of the License at                                 
+*                                                                           
+*     http://www.apache.org/licenses/LICENSE-2.0                            
+*                                                                           
+*   Unless required by applicable law or agreed to in writing, software     
+*   distributed under the License is distributed on an "AS IS" BASIS,       
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and     
+*   limitations under the License.                                          
+****************************************************************************
+         MACRO
+*-------------------------------------------------------------------*
+*        THIS STRUCTURE MUST BE INITIALIZED TO BINARY ZEROES.  THIS
+*        MEANS 'LOW-VALUES' FOR YOU COBOL PROGRAMMERS.
+*
+*        MEMBER NAME --> GVBAUR35
+*        DSECT NAME  --> M35SVC99
+*-------------------------------------------------------------------*
+&NAME    GVBAUR35 &DSECT=YES
+         AIF   ('&DSECT' EQ 'YES').MUR3510
+M35SVC99 DS    0D
+         AGO   .MUR3520
+.MUR3510 ANOP
+M35SVC99 DSECT
+.MUR3520 ANOP
+M35FCODE DS    CL1      FUNCTION CODE
+M35FCDAL EQU   C'1'      - ALLOCATE
+M35FCDUN EQU   C'2'      - DEALLOCATE
+.*
+         DS    CL1      FILLER FOR ALIGNMENT
+.*
+M35RCODE DS    H        SVC99 RETURN CODE
+.*
+M35VLSEQ DS    H        VOLUME SEQUENCE NUMBER
+.*
+M35VLCNT DS    H        VOLUME COUNT
+.*
+M35PRIME DS    H        PRIMARY SPACE QUANTITY
+.*
+M35SECND DS    H        SECONDARY SPACE QUANTITY
+.*
+M35BLKSZ DS    H        BLOCK SIZE DCB KEYWORD
+.*
+M35LRECL DS    H        LOGICAL RECORD LENGTH
+.*
+M35KYLEN DS    H        KEY LENGTH (1 - 255)
+.*
+M35KEYO  DS    H        KEY POSITION (1 - 256)
+.*
+M35RETPD DS    H        KEY POSITION (1 - 9999)
+.*
+M35DIR   DS    H        DIRECTORY BLOCKS
+.*
+         DS    CL54     RESERVED FOR FUTURE TEXT UNIT VALUES
+.*
+M35DDNAM DS    CL8      DATA DEFINITION NAME
+.*
+M35DSNAM DS    CL46     DATASET NAME
+.*
+M35MEMBR DS    CL8      MEMBER NAME OR RELATIVE GDG
+.*
+M35STATS DS    CL3      EXISTING DATASET STATUS
+.*                      'OLD' 'MOD' 'NEW' 'SHR'
+M35NDISP DS    CL7      NORMAL DISPOSITION
+.*                      'UNCATLG' 'CATLG' 'DELETE' 'KEEP'
+M35CDISP DS    CL7      CONDITIONAL DISPOSITION
+.*                      'UNCATLG' 'CATLG' 'DELETE' 'KEEP'
+M35VLSER DS    CL6      VOLUME SERIAL NUMBER
+         DS    5CL6     RESERVED FOR MORE VOLSERS
+.*
+M35CLOSE DS    CL1      DATASET FREED AT CLOSE
+.*                      'Y' 'N'
+.*                      THE DEFAULT IS 'N'
+M35RECFM DS    CL2      RECORD FORMAT
+.*                      'FB' 'F ' 'VB' 'V ' 'FA' 'U '
+M35TRKS  DS    CL1      ALLOCATE SPACE IN TRACKS
+.*                      'Y' 'N'
+.*                      THE DEFAULT IS 'N'
+M35CYLS  DS    CL1      ALLOCATE SPACE IN CYLINDERS
+.*                      'Y' 'N'
+.*                      THE DEFAULT IS 'N'
+M35RLSE  DS    CL1      RELEASE IS SPECIFIED
+.*                      'Y' 'N'
+.*                      THE DEFAULT IS 'N'
+M35UNIT  DS    CL8      UNIT NAME
+M35DSORG DS    CL4      DATASET ORGINIZATION
+.*                      'PS' 'PO' 'VSAM' 'DA'
+M35RECO  DS    CL4      VSAM ORGANIZATION
+.*                      'KSDS' 'ESDS' 'RRDS' 'LSDS'
+M35EXPDL DS    CL7      EXPIRATION DATE (CCYYDDD)
+         DS    CL282    RESERVED FOR FUTURE TEXT UNITS
+.*
+M35SYSOU DS    CL1      SYSTEM OUTPUT MSGCLASS (SYSOUT)
+M35SHOLD DS    CL1      SYSTEM OUTPUT HOLD
+M35COPYS DS    H        SYSTEM OUTPUT COPIES
+M35OUTLM DS    F        SYSTEM OUTPUT OUTLIM
+.*
+M35S99LN EQU   (*-M35SVC99)
+         MEND

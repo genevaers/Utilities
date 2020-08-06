@@ -1,0 +1,710 @@
+*
+* (c) Copyright IBM Corporation 2001, 2017.  
+*     Copyright Contributors to the GenevaERS Project.
+* SPDX-License-Identifier: Apache-2.0
+*
+****************************************************************************
+*                                                                           
+*   Licensed under the Apache License, Version 2.0 (the "License");         
+*   you may not use this file except in compliance with the License.        
+*   You may obtain a copy of the License at                                 
+*                                                                           
+*     http://www.apache.org/licenses/LICENSE-2.0                            
+*                                                                           
+*   Unless required by applicable law or agreed to in writing, software     
+*   distributed under the License is distributed on an "AS IS" BASIS,       
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and     
+*   limitations under the License.                                          
+****************************************************************************
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        E X T R A C T   P R O C E S S   W O R K   A R E A S          *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+
+                     EJECT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        T H R E A D   W O R K A R E A  (WORKING STORAGE)             *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+THRDAREA DSECT                    THREAD    WORKING STORAGE
+*
+*
+SAVEAREA DS  18fd                 REGISTER     SAVE AREA ADDRESS
+SAVESUBR DS  18fd                 EVENT   READ SAVE AREA ADDRESS
+SAVEZIIP DS  18fd                 ZIIP TCB/SRB SWITCH    SAVE  AREA
+cookie_save ds 18fd               save area for Cookie subroutine
+cdd_save ds 4fd                   save area for Conv_date_daynum rtn
+*
+THRDMAIN DS    A                  MAIN DRIVER  THREAD    ADDRESS
+THRDFRST DS    A                  1ST  THREAD  WORK AREA ADDRESS
+THRDPREV DS    A                  PREV THREAD  WORK AREA ADDRESS
+THRDNEXT DS    A                  NEXT THREAD  WORK AREA ADDRESS
+*
+TCBADDR  DS    A                  TASK CONTROL BLOCK     ADDRESS
+TASKECB  DS    F                  TASK EVENT   CONTROL   BLOCK
+*
+estae_stop ds  f                  If non-zero, then STATUS STOP active
+*
+SAVEBASE DS    A                  "GVBMR95"    ADDRESS  (BEFORE "PIE")
+PIESAVE  DS   4F                  PROGRAM      INTERRUPT REGISTERS
+PIEADDR  DS    A                  PROGRAM      INTERRUPT ADDRESS
+*
+WAITECB  DS   2A                  THREAD  WAITING  EVENT CONTROL BLOCKS
+*
+extest64 ds    f                  Extract summarization mbytes request
+EXTSUM64 DS    F                  EXTRACT SUMMARIZATION MEGABYTES USED
+RDLINUSE DS    A                  READ LOOK-UP SUBROUTINE IN-USE FLAG
+*
+ENCLTOKN DS    FD                 ENCLAVE TOKEN
+SRB_active ds  F                  No of SRBs executing (Only THRDMAIN)
+*                                 MUST use CS to update
+SRB_Limit  ds  F                  Limit for previous field
+SRBTOKEN DS    FD                 "SRB"   SUSPEND/RESUME TOKEN
+EXIT_DATA_PTR DS A                Pointer to exit_data or 0
+*
+BEGDATE  DS    F                  EXTRACT BEGIN DATE
+*NDDATE  DS    F                  EXTRACT END   DATE
+*
+BEGTIME  DS    xl16               BEGIN TIME STAMP
+ENDTIME  DS    xl16               END TIME STAMP
+*
+ovflmask ds    f                  Used to set overflow mask in PSW
+EXECDADR DS    A                  EXEC STMT  DATA  ADDRESS("EXEC" CARD)
+PARMTBLA DS    A                  PARAMETER  TABLE ADDRESS("MR95PARM" )
+*
+abend_msg ds   fl4                Abend on this error message number
+abend_lt ds    fl4                Abend at this LT row no. (TRACSUB)
+*
+GLOBVNAM DS    A                  GLOBAL VARIABLE  NAME LIST
+*
+litpcnt  ds    F                  This contains the max literal pools
+*                                 we will need. A max of 1 for each
+*                                 ES set
+VIEWCNT  DS    HL2                VIEW   COUNT (ALL THREADS)
+THRDCNT  DS    HL2                THREAD COUNT (DISK/TAPE/OTHR THREADS)
+*
+THRDDONE DS    F                  THREAD  DONE  COUNT   (FINISHED OKAY)
+*
+EXTFILEA DS    A                  EXTRACT FILE  CONTROL INFO ADDRESS
+*
+VDPCOUNT DS    F                  VIEW   DEFN   TABLE        COUNT
+VDPSIZE  DS    F                  VIEW   DEFN   TABLE        SIZE
+VDPBEGIN DS    A                  VIEW   DEFN   PARAMETERS   TABLE
+*
+LTCOUNT  DS    F                  LOGIC  TABLE  ENTRY        COUNT
+LTROWADR DS    F                  LOGIC  TABLE  ROW  ADDRESS TABLE
+LTSIZE   DS    F                  LOGIC  TABLE  SIZE
+LTBEGIN  DS    A                  LOGIC  TABLE  BEGINNING    ADDRESS
+*
+LTHDROWA DS    A                  HEADER ("HD") ROW  ADDRESS
+LTENROWA DS    A                  LOGIC  TABLE  "EN" ROW ADDRESS
+*
+LTNXDISK DS    A                  NEXT   UNASSIGNED DISK "RE" ROW ADDR
+LTNXTAPE DS    A                  NEXT   UNASSIGNED TAPE "RE" ROW ADDR
+LTNXOTHR DS    A                  NEXT   UNASSIGNED OTHR "RE" ROW ADDR
+*
+THRDEXEC DS    A                  "ES"  SETS   EXECUTED   BY  THREAD
+*
+CODESIZE DS    F                  CODE  BUFFER SIZE
+CODEBEG  DS    A                  CODE  BUFFER BEGINNING ADDRESS
+CODEEND  DS    A                  CODE  BUFFER ENDING    ADDRESS
+*
+THRDLITP DS    A                  THIS  THREAD'S LITERAL POOL BEG ADDR
+THRDRE   DS    A                  THIS  THREAD'S "RE" ROW     ADDRESS
+THRDES   DS    A                  THIS  THREAD'S "ES" ROW     ADDRESS
+*
+thrd_evntbyte_cnt ds xl8     Event bytes read under this thread
+thrd_evntrec_cnt ds xl8      Event records read under this thread
+thrd_extrbyte_cnt ds xl8     Extract bytes written under this thread
+thrd_extrrec_cnt ds xl8      Extract records written under this thread
+grand_total_lkups ds xl8     Total look-ups across all views attempted
+processed_v     ds  pl8      Total number of views
+total_lkups     ds  pl8      Total number of lookups   found+not found
+*
+SHIFTDIG DS    XL2                DECIMAL SHIFT DIGITS
+THRDTYP  DS    HL2                THREAD  TYPE (DISK,TAPE,OTHR)
+*
+******  ENVIRONMENT AREA BEGINNING  ***********************************
+         ds    0d
+env_area ds    xl(genenv_l)  use GENENV length to define area: GVBX95PA
+*
+******  ENVIRONMENT AREA END        ***********************************
+*
+******  FILE INFORMATION AREA BEGINNING *******************************
+*
+file_area ds   xl(genfile_l) use GENFILE lngth to define area: GVBX95PA
+*
+******  FILE INFORMATION AREA END       *******************************
+*
+EVNTSUBR DS    CL8                EVENT   FILE READ  ROUTINE  NAME
+EVNTREAD DS    A                  EVENT   FILE READ  ROUTINE  ADDRESS
+EVNTDCBA DS    A                  EVENT   FILE DCB   ADDRESS
+EVNTGETA DS    A                  EVENT   FILE "GET"    SUBR  ADDRESS
+EVNTCHKA DS    A                  EVENT   FILE "CHECK"  SUBR  ADDRESS
+EVNTdecbp DS   A                  EVENT   FILE DECB pool ADDRESS
+EVNTbufp  DS   A                  EVENT   FILE buffer pool address
+EVNTbufps DS   A                  EVENT   FILE buffer pool size
+EVNTbufno DS   H                  EVENT   FILE buffer pool number
+EVNTDECB DS    A                  EVENT   FILE DECB  ADDRESS (CURRENT)
+evntpgfs ds    a                  event file page fix start address
+evntpgfe ds    a                  event file page fix end address
+*
+RECEND   DS    ad                 EVENT   RECORD END     (CURRENT REC)
+EODADDR  DS    ad                 EVENT   BUFFER END-OF-DATA  ADDRESS
+*
+PREVRECA DS    ad                 PREVIOUS EVENT RECORD  ADDRESS
+event_file_cnt ds  F             Total num event files read (main thrd)
+processed_view_cnt ds  F          Views processed (main thrd for ~EXEC)
+                     EJECT
+MAXSTDF# DS    HL2                MAXIMUM  STANDARD FILE NUMBER
+MAXEXTF# DS    HL2                MAXIMUM  EXTRACT  FILE NUMBER
+*
+RETNCODE DS    F                  CALLED  SUBROUTINE RETURN  CODE
+RETNPTR  DS    ad                 CALLED  SUBROUTINE RETURN  POINTER
+RETNBSIZ DS    F                  CALLED  SUBROUTINE RETURN  BLKSIZE
+*
+SUMRTNC  DS    F                  SUMMARIZE  EXTRACT RETURN  CODE
+*
+EOFEVNT  DS    C                  END-OF-FILE   ENCOUNTERED
+VIEWTRAC DS    C                  VIEW SPECIFIC TRACE PARAMETERS
+*
+LBCHAIN  DS   0CL6                LOOK-UP BUFFER     CHAIN
+         DS    AL4                THESE   TWO LINES  MUST  REMAIN
+         DS    HL2                TOGETHER TO MATCH  THE   BUFFER PREFX
+*
+DBLWORK  DS    d                  DOUBLE  WORD  WORK AREA
+         ds    d                  plus extra
+WORKAREA DS    XL16               PACKED  DATA  WORK AREA
+WORKAR2  DS   0XL16               PACKED  DATA  WORK AREA
+DBLWORK2 DS    D                  DOUBLE  WORD  WORK AREA
+DBLWORK3 DS    D                  DOUBLE  WORD  WORK AREA
+DBLWORK4 DS    D                  DOUBLE  WORD  WORK AREA
+dfp_quantum_ptr ds a              dfp_quantum pointer                  +
+                                      (set by MR96 for Mr95)
+*
+WKREENT  DS   0XL256              RE-ENTRANT  PARAMETER   AREA
+LKUPKEY  DS    XL256              LOOK-UP  KEY  WORK AREA
+*
+CEEPIPI  DS    A                  COMMON   LANGUAGE  INTERFACE ADDRESS
+CEEWADDR DS    A                  COMMON   LANGUAGE  INTERFACE WORKAREA
+*
+CTRLDCBA DS    A                  CONTROL REPORT DCB ADDRESS
+Logfdcba DS    A                  Log file  DCB ADDRESS
+TRACDCBA DS    A                  "MR95"  TRACE  DCB ADDRESS
+*
+JFCBEXIT DS    A
+*
+SAVER10  DS    A                  SAVE AREA FOR 1ST  LEVEL RETURN  ADDR
+SAVEWR   DS    A                  SAVE AREA FOR "WR" ROW  ADDRESS
+SAVEPOS  DS    F                  SAVE AREA FOR ORIGINAL FIELD POSITION
+lt_saver9 ds   fd                 linkage register save area
+default_func ds a                 area to hold default function ptr
+xrck_ext_recaddr ds  fd           Holds rec address in xrck extension  +
+                                  buffer, this is needed if GVBXLEU    +
+                                  is used.
+*
+MAXOCCUR DS    HL02               MAXIMUM OCCURRENCE COUNT
+CUROCCUR DS    HL02               CURRENT OCCURRENCE COUNT
+*
+SELSWT   DS    CL1                RECORD  SELECTION  LOGIC SWITCH
+LRGNUM   DS    CL1                LARGE   NUMBER     MODE  (19,4)
+*
+ERRDATA  DS    CL54               INDICATIVE   ERROR DATA
+*
+                     SPACE 3
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        H E A D E R   R E C O R D S                                  *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+HDRREC   DS   0CL16               HEADER  RECORD WORK AREA
+HDRECLEN DS    HL02               RECORD  LENGTH
+         DS    XL02
+HDSORTLN DS    HL02               SORT KEY       AREA LENGTH
+HDTITLLN DS    HL02               SORT KEY TITLE AREA LENGTH
+HDDATALN DS    HL02               EXTRACT DATA   AREA LENGTH
+HDNCOL   DS    HL02               NO. OF COLUMN CALCULATIONS
+HDVIEW#  DS    FL04               REPORT  ID
+HDSORTKY DS   0CL01               SORT    FIELDS (PLACEHOLDER)
+*
+HDRDATA  DS   0CL31
+HDRECCNT DS    PL06               RECORD  COUNT
+HDUSERID DS    CL08               USER    ID
+HDEVNTNM DS    CL08               EVENT   FILE       DDNAME
+HDSATIND DS    CL01               VIEW    SATISFIED  INDICATOR
+HD0C7IND DS    CL01               0C7     ABEND      INDICATOR
+HDOVRIND DS    CL01               EXTRACT LIMIT      EXCEEDED
+HDLIMIT  DS    PL06               EXTRACT RECORD     LIMIT
+                     EJECT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*       "STGTP90" -  PARAMETER LIST DEFINITION                        *
+*                 -  PARAMETER AREA DEFINITION                        *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+TP90LIST DS   0A               PARAMETER  LIST FOR "STGTP90"
+TP90PA   DS    A               ADDRESS OF PARAMETER AREA
+TP90RECA DS    A               ADDRESS OF RECORD    BUFFER
+TP90KEYA DS    A               ADDRESS OF RECORD    KEY
+                     SPACE 3
+TP90AREA DS   0CL01            FILE SPECIFICATION ENTRY DEFINITION
+*
+PAANCHOR DS    AL04            TP90   WORK  AREA ANCHOR
+PADDNAME DS    CL08            FILE   DDNAME
+PAFUNC   DS    CL02            FUNCTION CODE
+PAFTYPE  DS    CL01            FILE   TYPE (V  = VSAM,  S = SEQUENTIAL)
+PAFMODE  DS    CL02            FILE   MODE (I  = INPUT, O = OUTPUT    )
+*                                          (IO = BOTH                 )
+PARTNC   DS    CL01            RETURN CODE
+PAVSAMRC DS    HL02            VSAM   RETURN CODE
+PARECLEN DS    HL02            RECORD LENGTH
+PARECFMT DS    CL01            RECORD FORMAT (F=FIXED, V=VARIABLE)
+PARESDS  DS    CL01            ESDS direct access
+*
+PALEN    EQU   *-TP90AREA      PARAMETER AREA LENGTH
+                     EJECT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*       "GVBDL96" -  PARAMETER   LIST DEFINITION                      *
+*                 -  FIELD DEFINITION ARRAY ENTRY                     *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+DL96LIST DS   0A
+*
+DL96PA   DS    A             ADDRESS OF FIELD  ARRAY ENTRY (SOURCE)
+DL96TGTA DS    A             ADDRESS OF TARGET DATA  AREA  (PIC(X))
+DL96LENA DS    A             ADDRESS OF EDITED DATA  LENGTH(S9(4) COMP)
+DL96RTNA DS    A             ADDRESS OF RETURN CODE        (S9(4) COMP)
+                     SPACE 3
+         dl96area dsect=no   gvbdl96 PARAMETER AREA
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*       DATASPACES WORK AREAS                                         *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+DSP_TBEG DS    A               DATA SPACE ANCHOR TABLE - BEGIN
+DSP_TSIZ DS    F               DATA SPACE ANCHOR TABLE - SIZE
+DSP_TEND DS    A               DATA SPACE ANCHOR TABLE - END
+PRI_STOR DS    F               AVAILABLE PRIMARY STORAGE
+                     EJECT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        P R I N T   L I N E   O U T P U T   A R E A                  *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+PRNTRDW  ds    0cl4               RDW for printing to VB output
+PRNTRDWH ds    hl02               High RDW
+PRNTRDWL ds    hl02               Low RDW
+         org   prntrdwl
+PRNTLEN  DS    HL02               DISPLAY  TEXT   LENGTH "WTO"
+PRNTLINE DS   0CL161              CONTROL  REPORT PRINT  LINE
+PRNTCC   DS    CL001              CARRIAGE CONTROL
+PRNTTEXT DS    CL056              PRINT    TEXT
+         DS    C                  Filler (PRNTSTAT)
+PRNTCNT  DS    CL015              PRINT    COUNT
+PRNTFILE DS    CL010              PRINT    EXTRACT FILE NO.
+PRNTFIL1 DS    CL001              PRINT    FILLER
+PRNTCLUE DS   0CL050              PRINT   "CLUE"  INFORMATION
+PRNTEXIT DS   0CL08
+PRNTBYTS DS    CL20
+PRNTINPT DS    CL20
+         DS    CL10
+         DS    CL027
+         ORG   PRNTLINE+28
+PRNTFLBL DS    CL02
+PRNTFND  DS    CL11               PRINT    LOOKUPS FOUND
+         DS    CL01
+PRNTNLBL DS    CL03
+PRNTNOT  DS    CL11               PRINT    LOOKUPS NOT  FOUND
+         DS    CL01
+PRNTSTAT DS    CL01               FINAL    REPORT  STATUS
+         ORG
+*
+*WTOPARM  WTO   TEXT=(R2),MF=L
+*WTOPARML EQU   *-WTOPARM
+*
+*stckconveform stckconv mf=L
+*
+          ds   0d
+                     EJECT
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        V S A M   E V E N T   F I L E   V A R I A B L E S            *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+VSAMACB  DS    (MDLVACBL)C        VSAM    ACCESS   CONTROL   BLOCK
+VSAMRPL  DS    (MDLVRPLL)C        VSAM    REQUEST  PARAMETER LIST
+*
+VSAMPTR  DS    A                  CONTROL INTERVAL ADDRESS
+*
+CISIZE   DS    F                  CONTROL INTERVAL SIZE
+LRECL    DS    F                  MAXIMUM LOGICAL  RECORD    LENGTH
+*
+MAPCURR  DS    A                  CURRENT RECORD DEFINITION  FIELD
+MAPEND   DS    A                  LAST    RECORD DEFINITION  FIELD
+*
+SAMECNT  DS    H                  SAME    LENGTH RECORD   COUNT
+                     SPACE 5
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*                                                                     *
+*        D B 2   E V E N T   F I L E   V A R I A B L E S              *
+*                                                                     *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+DSNALI   DS    A                  DB2     INTERFACE (ASSEMBLER)
+DSNHLI2  DS    A                  DB2     INTERFACE (HIGHER LEVEL LANG)
+*
+XRCKTOKN DS   0A                  GVBXRCK THREAD LEVEL TOKEN ADDRESS
+SQLWADDR DS   0A                  SQL     WORK AREA  ADDRESS
+IMSWADDR DS    A                  IMS     WORK AREA  ADDRESS
+SQLDADDR DS    A                  SQL     DESCRIPTOR AREA    ADDRESS
+SQLTADDR DS    A                  SQL     STATEMENT  TEXT    ADDRESS
+*
+ROWLEN   DS    F                  DB2     RECORD LENGTH   (CURRENT ROW)
+ROWADDR  DS    A                  DB2     RECORD ADDRESS  (CURRENT ROW)
+*
+REFACB   DS    (MDLRACBL)C        REFERENCE FILE ACB (#DD RECORD)
+REFRPL   DS    (MDLRRPLL)C        REFERENCE FILE RPL (#DD RECORD)
+*
+REFADDR  DS    A                  REF RECORD ADDRESS
+*
+REFTBL   DS    CL03               REFERENCE  TABLE ID
+REFKEY   DS    CL08               REFERENCE  TABLE KEY (SQL TEXT)
+         DS    CL22               FILLER
+REFDATE  DS    CL08               EFFECTIVE   DATE
+*
+WORKMSGL DS    HL2                WTO MESSAGE AREA
+WORKMSG  DS    CL80
+*
+PACKCODE DS    CL5                REASON CODE FROM HERE
+REASCODE DS    CL9                READABLE  RETURN CODE (HEX)
+FUNCTION DS    CL12               CALL ATTACH SERVICE  REQUESTED
+DBSUBSYS DS    CL4                SUBSYSTEM   NAME
+DBTRMECB DS    F                  DB2  TERMINATION ECB
+DBSTRECB DS    F                  DB2  STARTUP     ECB
+RIBPTR   DS    A                  RELEASE  INFORMATION BLOCK ADDRESS
+DB2PLAN  DS    CL8                DB2PLAN  NAME
+TERMOP   DS    CL4                TERMINATION   OPTION
+DATEFMT_position  DS    CL3
+*
+INCLNULL DS   0C                  INCLUDE NULL INDICATORS (GVBMRDV)
+CAFFUNC  DS    CL12               CURRENTLY  EXECUTING CALL ATTACH FUNC
+*
+         DS   0D
+*        EXEC  SQL INCLUDE SQLCA
+***$$$  SQLCA
+SQLCA    DS   0F
+SQLCAID  DS    CL8      ID
+SQLCABC  DS    F        BYTE CO
+SQLCODE  DS    F        RETURN
+SQLERRM  DS    H,CL70   ERR MSG
+SQLERRP  DS    CL8      IMPL-DE
+SQLERRD  DS    6F
+SQLWARN  DS   0C        WARNING
+SQLWARN0 DS    C'W'     IF ANY
+SQLWARN1 DS    C'W'     = WARNING
+SQLWARN2 DS    C'W'     = WARNING
+SQLWARN3 DS    C'W'     = WARNING
+SQLWARN4 DS    C'W'     = WARNING
+SQLWARN5 DS    C'W'     = WARNING
+SQLWARN6 DS    C'W'     = WARNING
+SQLWARN7 DS    C'W'     = WARNING
+SQLEXT   DS   0CL8
+SQLWARN8 DS    C
+SQLWARN9 DS    C
+SQLWARNA DS    C
+SQLSTATE DS    CL5
+***$$$
+SQLCALEN EQU   *-SQLCA
+*
+*         DS   0D
+*DYNAAREA DS    (M35S99LN)C
+*
+         DS   0F
+JFCB     DS    CL176              JOB  FILE CONTROL  BLOCK
+         org   jfcb
+MDLRBA   ds    F                 Current RBA to get
+endrba   ds    f                 end RBA in dataset
+         org   jfcb
+Thread_fail ds f                 Failing thread ID - set to thread ID
+*                       when abnormally terminating (Use CS to update)
+*                       (only useful in Main thread workarea)
+print_Return_code   ds cl6
+              ds x      used  for unpk into print_return_code
+alias    equ  *,x'80'   alias flag
+              ds x      area to hold above flags
+return_code   ds f
+reason_code   ds f
+error_address ds a
+espie_token ds   f
+overall_return_code ds f   area to hold highest return code (only of   +
+                        use in mainthrd
+NAMEPGM  ds    cl8
+namePGMl ds    al2
+rpt_dd95c ds   cl8
+rpt_dd95l ds   cl8
+         org   ,
+switches ds    pl6
+Thread_mode    ds   c             'P' for problem state, 'S' supervisor
+localziip ds   c                  copy of execziip
+*
+WLMTOKEN DS    XL04               WORKLOAD  MANAGER  PERIOD TOKEN
+*
+         DS   0D
+*
+XFRTCBRC DS    F
+*
+SAVETCB  DS  18fd                 REGISTER SAVE AREA FOR "IEAV" TCB
+*
+XFRSRBRC DS    F
+*
+SAVESRB  DS  18fd                 REGISTER SAVE AREA FOR "IEAV" SRB
+*
+Stoken   ds    fd
+ZIIPQUALTIME DS    FD
+ZIIPONCPTIME DS    FD
+ZIIPTIME DS    FD                 ACCUMULATED ZIIP TIME
+enc_cputime    ds fd
+THREAD_SRB_RETURN DS  A
+*
+HEXFF    DS    CL200              CONSTANT
+SPACES   DS    CL256              CONSTANT
+*
+******  GENPARM AREA BEGINNING  ***************************************
+         DS   0d                  STANDARD  PARAMETER LIST
+PARM_AREA ds   xl(genparm_l) use GENPARM lngth to define area: GVBX95PA
+*
+******  GENPARM AREA END        ***************************************
+*
+TCBPET1A DS    Ad              MUST stay
+TCBPET2A DS    Ad                        together
+*
+TCBPET1  DS    XL16
+TCBPET2  DS    XL16
+*
+SRBPET1A DS    Ad              MUST stay
+SRBPET2A DS    Ad                        together
+*
+SRBPET1  DS    XL16
+SRBPET2  DS    XL16
+*
+WTOPARM  WTO   TEXT=(R2),MF=L
+WTOPARML EQU   *-WTOPARM
+
+stckconveform stckconv mf=L
+         DS   0D
+DYNAAREA DS    (M35S99LN)C
+*
+XFRTCBPL DS   0d                  "IEAVXFR" PARAMETERS
+XFRTCBP1 DS    Ad
+XFRTCBP2 DS    Ad
+XFRTCBP3 DS    Ad
+XFRTCBP4 DS    Ad
+XFRTCBP5 DS    Ad
+XFRTCBP6 DS    Ad
+XFRTCBP7 DS    Ad
+XFRSRBPL DS   0d
+XFRSRBP1 DS    Ad
+XFRSRBP2 DS    Ad
+XFRSRBP3 DS    Ad
+XFRSRBP4 DS    Ad
+XFRSRBP5 DS    Ad
+XFRSRBP6 DS    Ad
+XFRSRBP7 DS    Ad
+*
+save_grande    ds   15fd
+workarea1    ds d
+workarea2    ds d
+registers   ds 16fd
+*
+         IEAMSCHD MF=(L,SRBAREA)
+*                                              COMPANION "SR"SRB"
+CONVTIME DS    CL16               STCKCONV WORKAREA
+         ds    xl2                spare
+printmap_header ds  c             flag for printmap_headings D if done
+         ds    xl3                filler (spare)
+error_bufl     ds   h             Halfword prefix for WTO TEXT
+error_buffer   ds   cl126         buffer for message text (126 is WTO
+aleserv  aleserv  MF=L
+*                                 limit for a single message)
+callparm_list call ,(,,,),MF=L
+*
+msg_parmlist ds 0f
+msg_no       ds f
+msg_buffer   ds a
+msg_bufl     ds f
+msg_subs     ds f
+msg_sub1a    ds a
+msg_sub1l    ds f
+msg_sub2a    ds a
+msg_sub2l    ds f
+msg_sub3a    ds a
+msg_sub3l    ds f
+msg_sub4a    ds a
+msg_sub4l    ds f
+msg_sub5a    ds a
+msg_sub5l    ds f
+******  GVBMRDV WORKAREA BEGINNING  *******************************@01A
+FIXCOLS_TOTLEN DS F               Total length of fixed columns    @01A
+VCOLSCNT       DS F               Ongoing cnt of variable columns  @01A
+MAXVCOLS       DS F               Max number of variable columns   @01A
+R6SAVE         DS F               Save area for register 6         @01A
+DB2TABLE       DS CL255           Area to hold DB2 table name      @01A
+******  GVBMRDV WORKAREA END        *******************************@01A
+*                                                                  @01A
+******  GVBMRVS WORKAREA BEGINNING  *******************************@02I
+               ds 0f                                               @02I
+vs_gplwork     ds xl40            Area for IEZCTGPL SVC 26 parms   @02I
+vs_gflwork     ds xl32            Area for IEZctGFL SVC 26 parms   @02I
+vs_clusname    ds cl44            VSAM cluster name                @02I
+vs_dataname    ds cl44            VSAM cluster data portion name   @02I
+               ds 0d                                               @02I
+vs_locarea     ds 0cl256          Work buffer for SVC 26           @02I
+vs_loctlen     ds h               Total length of buffer           @02I
+vs_loculen     ds h               Used  length of buffer           @02I
+vs_locbuf      ds cl252           Actual buffer                    @02I
+vs_fieldwk     ds cl256           SVC 26 field list work area      @02I
+vs_evntddn     ds cl8             data portion DDname              @02I
+******  GVBMRVS WORKAREA END        *******************************@02I
+*                                                                  @02I
+WRTHDR_R14     DS fd              Save area for R14 in WRTHDR routine
+*
+format_phase   ds c               Flag for signalling if format
+*                                   phase required Y/N
+extract_phase  ds c               Flag for signalling if extract
+*                                   phase rather than reference
+vdp0650a       ds f               Address of in memory copy of the
+*                                  VDP 650 record
+vdp0801a       ds f               Address of in memory copy of the
+*                                  VDP 801 record
+*
+thread_vars    ds a                                              pgc300
+thread_vars_sz ds f                                              pgc300
+dfp1     equ   *,x'80'
+dfp2     equ   *,x'40'
+           ds  x
+printdfp_save  ds   2fd
+print_dfp1 ds  cl161
+print_dfp2 ds  cl161
+fp_reg_savearea ds 8fd            Enough for 8 64 bit registers
+estae_rsa  ds  16f                tempry work area for estae
+tod_start  ds  fd                 Area to save start TOD (timeused)
+tod_end    ds  fd                 Area to save end   TOD (timeused)
+*
+vdpcnt_real   ds f                Count of number of VDP recs read
+rehcnt        ds f                Number of "REH" record
+grefcnt       ds f                Number of reference files
+rehtbla       ds a                "REH" table pointer
+VDP_date      ds cl10
+VDP_time      ds cl8
+VDP_desc      ds cl48
+logictbl_date ds cl8
+logictbl_time ds cl8
+logictbl_desc ds cl48
+refpools      ds f                Size of memory needed for ref data
+refpools_real ds f                Real size we got 1mb chunks
+refpoolb      ds fd               Beginning of reference data storage
+refpoolc      ds fd               Current next avail. area for above
+Final_reports_save ds fd          Save area for return address (r14)
+litpool_sz    ds f                size of liter pool area for reports
+filecnt_real  ds f                The real extract file count
+write_buffer_tot ds f             All write i/o buffers total
+read_buffer_tot ds f              All read i/o buffers total
+read_buffer_hwm ds f              All read i/o buffers hwm
+         ds   0d
+timelist TIME  LINKAGE=SYSTEM,MF=L
+         ds   0d
+pgmwork  ds   cl1000              This is a work area available to
+*                                 be used by any program, anything
+*                                 put in this area is only available
+*                                 and guaranteed for the point in
+*                                 a program is executing. ie. if
+*                                 program puts data in here and
+*                                 then goes to another program the
+*                                 that cannot be relied upon to be
+*                                 when execution come back to this
+*                                 program. This area will also be
+*                                 used in task abend processing so
+*                                 the rest of the thread work remain
+*                                 intact with what it contained at
+*                                 the time of the abend.
+*RTC19720  Literal Pool Totals
+litptots  ds 0F
+Tlteslpsz ds  f                   Actual Literal Pool
+TllitpTOT ds  f                   Actual Literal Pool total
+TlitpCFEC ds  f                   Actual CFEC
+TlitpLKS  ds  f                   Actual LKS
+TlitpDTC  ds  f                   Actual LKS
+Tlitppct1 ds  h                   Actual Literal Pool       %
+Tlitppct2 ds  h                   Actual Literal Pool total %
+Tlitppct3 ds  h                   Actual CFEC               %
+Tlitppct4 ds  h                   Actual LKS                %
+Tlitppct5 ds  h                   Actual LKS                %
+*                                   a list of views to be run
+runview_ptr ds a                  --> Runview_list, if present. holds
+*                                   a list of views to be run
+cfcc_content ds f                 Contains content code for 1st
+*                                 constant in CFCC
+cfcc_length  ds f                 Contains real length for compare of
+*                                 1st constant in CFCC
+snapdcba DS    A                  "MR95"  snap   DCB ADDRESS
+hdrdcba  DS    A                   HDRDCB         DCB ADDRESS
+ltbldcba DS    A                  Logic table     DCB ADDRESS
+         ds   0d
+*
+         ds    0D
+vdp_addr_curr_seg ds A            Fields to allow VDP table to
+vdp_seg_len       ds F            be segmented
+vdp_seg_cnt       ds F
+*
+rpt_sort_area_len ds f            length of report sort area
+rpt_sort_area_ptr ds a            address of report sort area
+workunit_cnt      ds f            number of work unit entries
+isrcrec_cnt       ds f            number of detail records isrc
+owrtrec_cnt       ds f            number of active detail records owrt
+owrtrec_cnt1      ds f            number of total detail records owrt
+lkuprec_cnt       ds f            number of detail records lkup
+isrc_first        ds a            first isrc table entry
+owrt_first        ds a            first owrt table entry
+lkup_first        ds a            first lkup table entry
+ofil_first        ds a            first ofil table entry
+workunit_first    ds a            first work unit table entry
+*
+iref_rcnt         ds xl8
+iref_bcnt         ds xl8
+THRDLEN  EQU   *-THRDAREA
+thrdend  ds    0c
+*
+MDLVACBL EQU   76
+MDLVRPLL EQU   80
+MDLRACBL EQU   76
+MDLRRPLL EQU   76
+dfptrace dsect
+dfpdata  ds    cl161
+         org   dfptrace
+dfpcc    ds    c
+         ds    cl100
+decimals ds    cl34
+dfpsign  ds    c
+operand  ds    c' Operand n'
+         org   ,
+runview_list   dsect
+runv_header ds 0a
+runv_first  ds a                  first element in list or zero
+runv_count  ds f                  count of no of entries
+runv_next   ds a                  address of next free entry
+runv_length ds f                  Length of storage area
+runv_header_l  equ *-runv_header  length of header
+runv_entries ds 0c                list entries
+runvent      ds 0a
+runvent_next ds  a                pointer to next entry
+runvent_view ds  f                view number
+runvent_l    equ *-runvent
