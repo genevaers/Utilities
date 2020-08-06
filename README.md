@@ -1,3 +1,6 @@
 # gvblib
 genervaers utility repo
-Our first SAFR "public" (in that we probably won't make it public really) GitHub Repo.  Congrats Bob.  Nice work.
+
+This repository is used for the Open Mainframe Project to perform a code scan prior to transfer to the [GenevaERS OMP Project](https://github.com/genevaers).  This code base is a point in time snapshot, not actively maintained.  
+
+Our first SAFR public GitHub Repo.  Congrats Bob.  We're Open Source.  Nice work.
