@@ -8,7 +8,7 @@ It handles BSAM, and Channel I/O operation.
 
 ## How to build Instructions
 
-1.   Place all assember source parts in the same Partitioned Dataset within a z/OSoperation system
+1.   Place all assember source parts in the same Partitioned Dataset within a z/OS operating system
 2.   Use these options to assemble the GVBUR20 Source 
 //ASM      EXEC PGM=ASMA90,                                  
 // PARM=(NODECK,OBJECT,'SYSPARM(RELEASE)','OPTABLE(ZS7)',    
