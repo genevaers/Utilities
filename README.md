@@ -17,7 +17,7 @@ It handles BSAM, and Channel I/O operation.
     the parttitioned dataset you have placed the other assembler parts in this repo.
 4.    Use these parameters to bind this part
 //LINK     EXEC PGM=IEWL,                                      
-// PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(ANY),REUS(RENT))    
+// PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(ANY),REUS(RENT))      
  
 
 ## Training
