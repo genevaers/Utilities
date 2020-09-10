@@ -52,8 +52,17 @@ else
             echo "File has been created $1.GENEMOD"                                                                        
 fi                                                                                                                         
 #                                                                                                                          
-#   .   copy part to new load library                                                                                      
-cp  gvbur20 "//'$1.GENEMOD'"                                                                                               
+#   .   copy part to new load library  
+cd gvbur20                                        
+cp -F nl README.md "//'$1.GENEMOD(README)'"       
+cp -F nl dl96area.copy "//'$1.GENEMOD(DL96AREA)'" 
+cp -F nl execdata.copy "//'$1.GENEMOD(EXECDATA)'" 
+cp -F nl gvbaur35.copy "//'$1.GENEMOD(GVBAUR35)'" 
+cp -F nl gvbeye.macro  "//'$1.GENEMOD(GVBEYE)'"   
+cp -F nl gvbmr95w.copy "//'$1.GENEMOD(GVBMR95W)'" 
+cp -F nl gvbur20.asm   "//'$1.GENEMOD(GVBUR20)'"  
+cp -F nl gvbur20p.copy "//'$1.GENEMOD(GVBUR20P)'" 
+cp -F nl gvbx95pa.copy "//'$1.GENEMOD(GVBX95PA)'" 
 if (( $? )); then                                                                                                          
             echo "---------------------"                                                                                   
             echo "file has not been moved to GENEMOD"                                                                      
