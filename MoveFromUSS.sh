@@ -61,7 +61,7 @@ cp -F nl gvbaur35.copy "//'$1.GENEMOD(GVBAUR35)'"
 cp -F nl gvbeye.macro  "//'$1.GENEMOD(GVBEYE)'"   
 cp -F nl gvbmr95w.copy "//'$1.GENEMOD(GVBMR95W)'" 
 cp -F nl gvbur20.asm   "//'$1.GENEMOD(GVBUR20)'"  
-cp -F nl gvbur20p.copy "//'$1.GENEMOD(GVBUR20P)'" 
+cp -F nl gvbur20p.macro "//'$1.GENEMOD(GVBUR20P)'" 
 cp -F nl gvbx95pa.copy "//'$1.GENEMOD(GVBX95PA)'" 
 if (( $? )); then                                                                                                          
             echo "---------------------"                                                                                   
