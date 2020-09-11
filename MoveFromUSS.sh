@@ -42,7 +42,7 @@ else
 fi                                                                                                                         
 #                                                                                                                          
 #   .   alloc new file                                                                                                     
-tsocmd "ALLOC DSN('$1.GENEMOD') NEW CATALOG TRACKS UNIT(SYSDA) SPACE(10,10) LRECL(0) RECFM(U) DSORG(PO) BLKSIZE(32760) DSNTYPE(LIBRARY)"
+tsocmd "ALLOC DSN('$1.GENEMOD') NEW CATALOG TRACKS UNIT(SYSDA) SPACE(10,10) LRECL(80) RECFM(F) DSORG(PO) BLKSIZE(0) DSNTYPE(LIBRARY)"
 if (( $? )); then                                                                                                          
             echo "---------------------"                                                                                   
             echo "file has not been  created"                                                                              
