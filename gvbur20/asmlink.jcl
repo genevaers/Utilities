@@ -32,9 +32,9 @@
 //*                                                        
 //SYSIN    DD *                                            
 *PROCESS   LIBMAC                                          
-//         DD DSN=&SYSUID..GVBLIB.BUILD(GVBUR20),DISP=SHR      
+//         DD DSN=&SYSUID..GVBLIB.BUILD(GVBUR45),DISP=SHR      
 //*                                                     
-//SYSLIB   DD DISP=SHR,DSN=&SYSUID.GVBLIB.BUILD               
+//SYSLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.BUILD               
 //         DD DISP=SHR,DSN=ASM.SASMMAC2                 
 //         DD DISP=SHR,DSN=SYS1.MACLIB                  
 //         DD DISP=SHR,DSN=SYS1.MODGEN                  
@@ -51,7 +51,25 @@
 //            SPACE=(1024,(300,300),,,ROUND),           
 //            BUFNO=1                                   
 //*                                                     
+//SYSPRINT DD SYSOUT=* 
+//*
+     
+//*                                                      
+//LINK    EXEC PGM=IEWL,                                   
+// PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
+//SYSLIN   DD DISP=SHR,DSN=&&OBJECT                         
+//* SLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.LOAD                   
+//*                                                         
+//SYSUT1   DD DSN=&&SYSUT1,                                 
+//            UNIT=SYSDA,                                   
+//            SPACE=(1024,(120,120),,,ROUND),               
+//            BUFNO=1                                       
+//*                                                         
+//SYSLMOD  DD DSN=&SYSUID..GVBLIB.LOAD(GVBUR45),                  
+//            DISP=SHR                                      
+//*                                                         
 //SYSPRINT DD SYSOUT=*                                      
+//*                                                    
 //*                                                      
 //LINK    EXEC PGM=IEWL,                                   
 // PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
@@ -68,3 +86,45 @@
 //*                                                         
 //SYSPRINT DD SYSOUT=*                                      
 //*                                                    
+//ASM      EXEC PGM=ASMA90,                                
+// PARM=(NODECK,OBJECT,'SYSPARM(RELEASE)','OPTABLE(ZS7)',  
+// 'PC(GEN),FLAG(NOALIGN),SECTALGN(256),GOFF,LIST(133)')   
+//*                                                        
+//SYSIN    DD *                                            
+*PROCESS   LIBMAC                                          
+//         DD DSN=&SYSUID..GVBLIB.BUILD(GVBUR20),DISP=SHR      
+//*                                                     
+//SYSLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.BUILD               
+//         DD DISP=SHR,DSN=ASM.SASMMAC2                 
+//         DD DISP=SHR,DSN=SYS1.MACLIB                  
+//         DD DISP=SHR,DSN=SYS1.MODGEN                  
+//         DD DISP=SHR,DSN=CEE.SCEEMAC                  
+//*                                                     
+//SYSLIN   DD DSN=&&OBJECT,                             
+//            DISP=(NEW,PASS),                          
+//            UNIT=SYSDA,                               
+//            SPACE=(TRK,(25,10),RLSE),                 
+//            RECFM=FB,LRECL=80,BLKSIZE=2960            
+//*                                                     
+//SYSUT1   DD DSN=&&SYSUT1,                             
+//            UNIT=SYSDA,                               
+//            SPACE=(1024,(300,300),,,ROUND),           
+//            BUFNO=1                                   
+//*                                                     
+//SYSPRINT DD SYSOUT=* 
+//*                                                      
+//LINK    EXEC PGM=IEWL,                                   
+// PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
+//SYSLIN   DD DISP=SHR,DSN=&&OBJECT                         
+//* SLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.LOAD                   
+//*                                                         
+//SYSUT1   DD DSN=&&SYSUT1,                                 
+//            UNIT=SYSDA,                                   
+//            SPACE=(1024,(120,120),,,ROUND),               
+//            BUFNO=1                                       
+//*                                                         
+//SYSLMOD  DD DSN=&SYSUID..GVBLIB.LOAD(GVBUR20),                  
+//            DISP=SHR                                      
+//*                                                         
+//SYSPRINT DD SYSOUT=*                                      
+//*
