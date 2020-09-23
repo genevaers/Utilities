@@ -52,8 +52,6 @@
 //            BUFNO=1                                   
 //*                                                     
 //SYSPRINT DD SYSOUT=* 
-//*
-     
 //*                                                      
 //LINK    EXEC PGM=IEWL,                                   
 // PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
@@ -66,22 +64,6 @@
 //            BUFNO=1                                       
 //*                                                         
 //SYSLMOD  DD DSN=&SYSUID..GVBLIB.LOAD(GVBUR45),                  
-//            DISP=SHR                                      
-//*                                                         
-//SYSPRINT DD SYSOUT=*                                      
-//*                                                    
-//*                                                      
-//LINK    EXEC PGM=IEWL,                                   
-// PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
-//SYSLIN   DD DISP=SHR,DSN=&&OBJECT                         
-//* SLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.LOAD                   
-//*                                                         
-//SYSUT1   DD DSN=&&SYSUT1,                                 
-//            UNIT=SYSDA,                                   
-//            SPACE=(1024,(120,120),,,ROUND),               
-//            BUFNO=1                                       
-//*                                                         
-//SYSLMOD  DD DSN=&SYSUID..GVBLIB.LOAD(GVBUR20),                  
 //            DISP=SHR                                      
 //*                                                         
 //SYSPRINT DD SYSOUT=*                                      
