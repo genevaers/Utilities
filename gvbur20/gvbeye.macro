@@ -26,7 +26,7 @@
 hdreye   ds    0x               label
 eyestaMP DC    C'SAFREYECATCHER: '
 modname  DC    Cl8'&module '
-         DC    C'PM@@@@@@@@'
+         DC    C' 0.0.0    ' 
          DC    C'&SYSDATC  &SYSTIME'
 bldnum   ds    0H
          DC    C'  (c) Copyright IBM Corporation 2008,2010.        ' 
