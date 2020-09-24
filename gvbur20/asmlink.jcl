@@ -55,8 +55,9 @@
 //*                                                      
 //LINK    EXEC PGM=IEWL,                                   
 // PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
-//SYSLIN   DD DISP=SHR,DSN=&&OBJECT                         
-//* SLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.LOAD                   
+//SYSLIN   DD DISP=SHR,DSN=&&OBJECT    
+//*
+//SYSLIB   DD DISP=SHR,DSN=SYS1.CSSLIB                   
 //*                                                         
 //SYSUT1   DD DSN=&&SYSUT1,                                 
 //            UNIT=SYSDA,                                   
@@ -98,7 +99,8 @@
 //LINK    EXEC PGM=IEWL,                                   
 // PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(24),REUS(RENT))  
 //SYSLIN   DD DISP=SHR,DSN=&&OBJECT                         
-//* SLIB   DD DISP=SHR,DSN=&SYSUID..GVBLIB.LOAD                   
+//*
+//SYSLIB   DD DISP=SHR,DSN=SYS1.CSSLIB                   
 //*                                                         
 //SYSUT1   DD DSN=&&SYSUT1,                                 
 //            UNIT=SYSDA,                                   
