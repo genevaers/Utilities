@@ -4,18 +4,22 @@ genervaers utility repo
 
 ## Description
 
-This module can be called by external programs for disk /or tape file I/O operations on sequential files.
+This module can be called by external programs for disk /or 
+tape file I/O operations on sequential files.
 It handles BSAM, and Channel I/O operation.  
 
 ## How to build Instructions
 
-1.   Place all assember source parts in the same Partitioned Dataset within a z/OS operating system
+1.   Place all assember source parts in the same Partitioned
+     Dataset within a z/OS operating system
 2.   Use these options to assemble the GVBUR20 Source
 //ASM      EXEC PGM=ASMA90,                                  
 // PARM=(NODECK,OBJECT,'SYSPARM(RELEASE)','OPTABLE(ZS7)',    
 // 'PC(GEN),FLAG(NOALIGN),SECTALGN(256),GOFF,LIST(133)')     
-3.  Ensure the HLASM Toolkit structured macros are in the SYSLIB concatenation along with the
-    the parttitioned dataset you have placed the other assembler parts in this repo.
+3.  Ensure the HLASM Toolkit structured macros are in the
+    SYSLIB concatenation along with the
+    the parttitioned dataset you have placed the other 
+    assembler parts in this repo.
 4.    Use these parameters to bind this part
 //LINK     EXEC PGM=IEWL,                                      
 // PARM=(XREF,LET,LIST,MAP,AMODE(31),RMODE(ANY),REUS(RENT))      
