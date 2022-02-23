@@ -1,0 +1,57 @@
+//DTGENLNK JOB (ACCT),'GENEVAERS LNK DTGEN',
+//          NOTIFY=&SYSUID.,
+//          REGION=0M,
+//          CLASS=A,
+//          MSGLEVEL=(1,1),
+//          MSGCLASS=X
+//*
+//         EXPORT SYMLIST=*
+//*
+//*        SET HLQ=<YOUR-TSO-PREFIX>
+//         SET MLQ=GVBDEMO
+//*
+//*********************************************************************
+//*
+//*     LINK GVBDTGEN TEST DATA GENERATOR
+//*
+//* BEFORE SUBMITTING THIS JOB, PLEASE:
+//*
+//*     1)  UPDATE THE JOB STATEMENT ABOVE TO CONFORM TO YOUR
+//*         INSTALLATION'S STANDARDS.
+//*
+//*     2)  SET THE VALUE OF "HLQ" ABOVE TO YOUR TSO PREFIX.
+//*         THIS IS NORMALLY THE SAME AS YOUR TSO ID,
+//*         UNLESS YOU HAVE CHANGED IT WITH THE TSO PROFILE PREFIX
+//*         COMMAND.
+//*
+//*         THIS VALUE WILL DETERMINE THE HIGH-LEVEL QUALIFIER
+//*         OF THE NAMES OF THE DEMO DATA SETS.
+//*
+//*     3)  THE "MLQ" DEFAULT VALUE IS GVBDEMO AND DOES NOT NEED TO BE
+//*         CHANGED.
+//*
+//*********************************************************************
+//*
+//GVBDTGEN EXEC PGM=IEWL,
+// PARM=(XREF,LET,LIST,MAP,RMODE(SPLIT),HOBSET,AC(1))
+//*
+//SYSLIN   DD DISP=SHR,DSN=&HLQ..&MLQ..BTCHOBJ(GVBDTGEN)
+//         DD *
+ NAME GVBDTGEN(R)
+//*
+//SYSLIB   DD DISP=SHR,DSN=CEE.SCEERUN
+//         DD DISP=SHR,DSN=CEE.SCEELKED
+//         DD DISP=SHR,DSN=CEE.SCEELIB
+//         DD DISP=SHR,DSN=SYS1.CSSLIB
+//         DD DISP=SHR,DSN=SYS1.LINKLIB
+//*
+//SYSUT1   DD DSN=&&SYSUT1,
+//            UNIT=SYSDA,
+//            SPACE=(1024,(120,120),,,ROUND),
+//            BUFNO=1
+//*
+//SYSLMOD  DD DSN=&HLQ..&MLQ..BTCHLOAD(GVBDTGEN),
+//            DISP=SHR
+//*
+//SYSPRINT DD SYSOUT=*
+//*
